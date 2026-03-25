@@ -63,4 +63,23 @@ public class UserRepository {
     public void delete(String userscd) {
         jdbcTemplate.update("DELETE FROM USERS001 WHERE USERSCD = ?", userscd);
     }
+    
+    public Object[] getUserProfileByUsername(String username) {
+
+        String sql =
+                "SELECT CONCAT(u1.FNAME,' ',u1.LNAME) username," +
+                "u1.EMAIL email," +
+                "u2.ROLECD role " +
+                "FROM USERS001 u1 " +
+                "LEFT JOIN USERS002 u2 " +
+                "ON u1.USERSCD = u2.USERSCD " +
+                "WHERE u1.EMAIL = ?";
+
+        return jdbcTemplate.queryForObject(sql,
+                (rs, rowNum) -> new Object[]{
+                        rs.getString("username"),
+                        rs.getString("email"),
+                        rs.getString("role")
+                }, username);
+    }
 }
