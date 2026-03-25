@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import com.bbots.model.User;
 import com.bbots.repository.UserRepository;
 import com.bbots.model.AuthRecord;
+import com.bbots.dto.UserProfileDTO;
 import com.bbots.model.AuthDataBlock;
 import com.bbots.repository.AuthRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,7 +26,7 @@ public class UserService {
 
     @Autowired
     private ObjectMapper objectMapper;
-
+    
     public List<User> getAllUsers() {
         return repository.findAll();
     }
@@ -71,5 +72,17 @@ public class UserService {
 
     public void deleteUser(String userscd) {
         repository.delete(userscd);
+    }
+    
+    public UserProfileDTO getUserProfileByUsername(String username) {
+
+        Object[] data = repository.getUserProfileByUsername(username);
+
+        UserProfileDTO dto = new UserProfileDTO();
+        dto.setUsername((String) data[0]);
+        dto.setEmail((String) data[1]);
+        dto.setRole((String) data[2]);
+
+        return dto;
     }
 }
