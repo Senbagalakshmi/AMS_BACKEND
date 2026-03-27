@@ -2,6 +2,8 @@ package com.bbots.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -23,13 +25,23 @@ public class AuthorizationProcedureService {
      * @param tableName   Target table name (e.g. "USERS001", "ROLE001")
      * @param payload     The DTO / Entity to be serialized to JSON
      */
-    public void processAuthorization(String orgCode, String programId, String tableName, Object payload) {
-        String sql = "CALL pr_handle_authorization(?::varchar, ?::varchar, ?::varchar, ?::json)";
+    public void processAuthorization(Long orgCode, String programId, String tableName, Object payload) {
+        String sql = "CALL pr_handle_authorization(?::bigint, ?::varchar, ?::varchar, ?::json)";
         try {
-            String jsonPayload = objectMapper.writeValueAsString(payload);
+            // Convert to Map and lowercase all keys so PostgreSQL's json_populate_record seamlessly maps them to its lowercase table columns
+            java.util.Map<String, Object> map = objectMapper.convertValue(payload, new com.fasterxml.jackson.core.type.TypeReference<java.util.Map<String, Object>>() {});
+            java.util.Map<String, Object> lowerCaseMap = new java.util.HashMap<>();
+            if (map != null) {
+                for (java.util.Map.Entry<String, Object> entry : map.entrySet()) {
+                    lowerCaseMap.put(entry.getKey().toLowerCase(), entry.getValue());
+                }
+            }
+            String jsonPayload = objectMapper.writeValueAsString(lowerCaseMap);
+            
             jdbcTemplate.update(sql, orgCode, programId, tableName, jsonPayload);
             System.out.println("Successfully called auth procedure for: " + programId);
-        } catch (JsonProcessingException e) {
+            System.out.println("Payload: " + jsonPayload);
+        } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
             System.err.println("Error serializing payload for auth procedure: " + e.getMessage());
             throw new RuntimeException("Serialization failed", e);
         } catch (Exception e) {

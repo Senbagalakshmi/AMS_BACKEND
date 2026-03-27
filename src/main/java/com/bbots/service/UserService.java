@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import com.bbots.model.User;
 import com.bbots.repository.UserRepository;
 import com.bbots.model.AuthRecord;
-import com.bbots.dto.UserProfileDTO;
 import com.bbots.model.AuthDataBlock;
 import com.bbots.repository.AuthRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,7 +25,7 @@ public class UserService {
 
     @Autowired
     private ObjectMapper objectMapper;
-    
+
     public List<User> getAllUsers() {
         return repository.findAll();
     }
@@ -44,16 +43,16 @@ public class UserService {
             String userJson = objectMapper.writeValueAsString(user);
 
             AuthRecord authRecord = new AuthRecord();
-            authRecord.setOrgCode(String.valueOf(user.getOrgCode()));
+            authRecord.setOrgCode(user.getOrgcode());
             authRecord.setProgramId("AUTH002"); // Adjust your Program ID appropriately
-            authRecord.setDisplayRemarks("User Creation Request for " + user.getUserScd());
-            authRecord.setEntryUser(user.getEUser());
+            authRecord.setDisplayRemarks("User Creation Request for " + user.getUserscd());
+            authRecord.setEntryUser(user.getEuser());
 
             AuthDataBlock block = new AuthDataBlock();
-            block.setOrgCode(String.valueOf(user.getOrgCode()));
+            block.setOrgCode(user.getOrgcode());
             block.setEffDate(new Date());
             block.setProgramId("AUTH002");
-            block.setPrimaryKey(user.getUserScd());
+            block.setPrimaryKey(user.getUserscd());
             block.setRecSl(1);
             block.setTableName("USERS");
             block.setDataBlock(userJson);
@@ -72,17 +71,5 @@ public class UserService {
 
     public void deleteUser(String userscd) {
         repository.delete(userscd);
-    }
-    
-    public UserProfileDTO getUserProfileByUsername(String username) {
-
-        Object[] data = repository.getUserProfileByUsername(username);
-
-        UserProfileDTO dto = new UserProfileDTO();
-        dto.setUsername((String) data[0]);
-        dto.setEmail((String) data[1]);
-        dto.setRole((String) data[2]);
-
-        return dto;
     }
 }

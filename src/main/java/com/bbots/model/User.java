@@ -9,22 +9,35 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
-    private Integer orgCode;
-    private String userScd;
-    private Integer menuType;
+    @com.fasterxml.jackson.annotation.JsonProperty("orgCode")
+    private Long orgcode;
+    @com.fasterxml.jackson.annotation.JsonProperty("usersCd")
+    private String userscd;
+    @com.fasterxml.jackson.annotation.JsonProperty("menuType")
+    private Integer menutype;
     private String gender;
     private String title;
-    private String fName;
-    private String mName;
-    private String lName;
+    @com.fasterxml.jackson.annotation.JsonProperty("fName")
+    private String fname;
+    @com.fasterxml.jackson.annotation.JsonProperty("mName")
+    private String mname;
+    @com.fasterxml.jackson.annotation.JsonProperty("lName")
+    private String lname;
     private String email;
     private String mobile;
     private String country;
-    private String eUser;
-    private Date eDate;
-    private String aUser;
-    private Date aDate;
-    private String cUser;
-    private Date cDate;
-    private String clientCd;
+    @com.fasterxml.jackson.annotation.JsonProperty("eUser")
+    private String euser;
+    @com.fasterxml.jackson.annotation.JsonProperty("eDate")
+    private Date edate;
+    @com.fasterxml.jackson.annotation.JsonProperty("aUser")
+    private String auser;
+    @com.fasterxml.jackson.annotation.JsonProperty("aDate")
+    private Date adate;
+    @com.fasterxml.jackson.annotation.JsonProperty("cUser")
+    private String cuser;
+    @com.fasterxml.jackson.annotation.JsonProperty("cDate")
+    private Date cdate;
+    @com.fasterxml.jackson.annotation.JsonProperty("clientCd")
+    private String clientcd;
 }

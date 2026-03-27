@@ -10,7 +10,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AuthRecord {
-    private String orgCode;
+    private Long orgCode;
     private String programId;
     private Long authSl;
     private String displayRemarks;

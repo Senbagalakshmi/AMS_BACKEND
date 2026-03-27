@@ -9,6 +9,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Menu004 {
+    private Long orgCode;
     private Integer roleCd;
     private Integer menuCode;
     private Integer subMenuCode;

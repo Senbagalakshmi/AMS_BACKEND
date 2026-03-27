@@ -28,7 +28,8 @@ public class ModuleController {
 
     @PostMapping
     public void createModule(@RequestBody Module m) {
-        authProcedureService.processAuthorization("101", "MOD-CRT", "MODULE001", m);
+        if (m.getOrgcode() == null) m.setOrgcode(50L);
+        authProcedureService.processAuthorization(m.getOrgcode(), "MOD-CRT", "MODULE001", m);
     }
 
     @PutMapping
@@ -50,7 +51,8 @@ public class ModuleController {
     @PostMapping("/{moduleId}/subs")
     public void createSub(@PathVariable Integer moduleId, @RequestBody SubModule sm) {
         sm.setModuleId(moduleId);
-        authProcedureService.processAuthorization("101", "MOD-CRT", "MODULE002", sm);
+        if (sm.getOrgcode() == null) sm.setOrgcode(50L);
+        authProcedureService.processAuthorization(sm.getOrgcode(), "MOD-CRT", "MODULE002", sm);
     }
 
     @PutMapping("/{moduleId}/subs")

@@ -14,18 +14,20 @@ public class UserRoleService {
     private UserRoleRepository repository;
 
     public List<UserRoleAssign> getAllAssignments() {
-        return repository.findAll();
+        List<UserRoleAssign> list = repository.findAll();
+        System.out.println("DEBUG: getAllAssignments found " + (list != null ? list.size() : "null") + " records.");
+        return list;
     }
 
-    public List<UserRoleAssign> getAssignmentsByUserId(String userScd) {
-        return repository.findByUserId(userScd);
+    public List<UserRoleAssign> getAssignmentsByUserId(String userscd) {
+        return repository.findByUserId(userscd);
     }
 
     public void assignRole(UserRoleAssign ura) {
         repository.save(ura);
     }
 
-    public void revokeRole(String userScd, Integer roleCd) {
-        repository.delete(userScd, roleCd);
+    public void revokeRole(String usersCd, Integer roleCd) {
+        repository.delete(usersCd, roleCd);
     }
 }

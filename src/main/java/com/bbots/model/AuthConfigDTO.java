@@ -9,7 +9,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AuthConfigDTO {
-    private String orgCode;
+    private Long orgCode;
     private String programId;
     private int approvalReq;
     private int preApproveProc;

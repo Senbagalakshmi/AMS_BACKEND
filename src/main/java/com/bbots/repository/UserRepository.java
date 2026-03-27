@@ -16,7 +16,7 @@ public class UserRepository {
     private JdbcTemplate jdbcTemplate;
 
     private final RowMapper<User> userMapper = (rs, rowNum) -> new User(
-            rs.getInt("ORGCODE"),
+            rs.getLong("ORGCODE"),
             rs.getString("USERSCD"),
             rs.getInt("MENUTYPE"),
             rs.getString("GENDER"),
@@ -47,39 +47,20 @@ public class UserRepository {
     public void save(User user) {
         String sql = "INSERT INTO USERS001 (ORGCODE, USERSCD, MENUTYPE, GENDER, TITLE, FNAME, MNAME, LNAME, EMAIL, MOBILE, COUNTRY, EUSER, CLIENTCD) " +
                      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        jdbcTemplate.update(sql, user.getOrgCode(), user.getUserScd(), user.getMenuType(), user.getGender(),
-                user.getTitle(), user.getFName(), user.getMName(), user.getLName(), user.getEmail(),
-                user.getMobile(), user.getCountry(), user.getEUser(), user.getClientCd());
+        jdbcTemplate.update(sql, user.getOrgcode(), user.getUserscd(), user.getMenutype(), user.getGender(),
+                user.getTitle(), user.getFname(), user.getMname(), user.getLname(), user.getEmail(),
+                user.getMobile(), user.getCountry(), user.getEuser(), user.getClientcd());
     }
 
     public void update(User user) {
         String sql = "UPDATE USERS001 SET ORGCODE=?, MENUTYPE=?, GENDER=?, TITLE=?, FNAME=?, MNAME=?, LNAME=?, EMAIL=?, MOBILE=?, COUNTRY=?, CLIENTCD=? " +
                      "WHERE USERSCD=?";
-        jdbcTemplate.update(sql, user.getOrgCode(), user.getMenuType(), user.getGender(), user.getTitle(),
-                user.getFName(), user.getMName(), user.getLName(), user.getEmail(), user.getMobile(),
-                user.getCountry(), user.getClientCd(), user.getUserScd());
+        jdbcTemplate.update(sql, user.getOrgcode(), user.getMenutype(), user.getGender(), user.getTitle(),
+                user.getFname(), user.getMname(), user.getLname(), user.getEmail(), user.getMobile(),
+                user.getCountry(), user.getClientcd(), user.getUserscd());
     }
 
     public void delete(String userscd) {
         jdbcTemplate.update("DELETE FROM USERS001 WHERE USERSCD = ?", userscd);
-    }
-    
-    public Object[] getUserProfileByUsername(String username) {
-
-        String sql =
-                "SELECT CONCAT(u1.FNAME,' ',u1.LNAME) username," +
-                "u1.EMAIL email," +
-                "u2.ROLECD role " +
-                "FROM USERS001 u1 " +
-                "LEFT JOIN USERS002 u2 " +
-                "ON u1.USERSCD = u2.USERSCD " +
-                "WHERE u1.EMAIL = ?";
-
-        return jdbcTemplate.queryForObject(sql,
-                (rs, rowNum) -> new Object[]{
-                        rs.getString("username"),
-                        rs.getString("email"),
-                        rs.getString("role")
-                }, username);
     }
 }

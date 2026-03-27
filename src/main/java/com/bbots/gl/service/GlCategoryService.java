@@ -30,5 +30,8 @@ public class GlCategoryService {
     public void revokeRole(Integer glCatCd) {
     	glCategoryRepository.delete(glCatCd);
     }
+    public void updateGlCategory(GlCategory gl) {
+    	glCategoryRepository.update(gl);
+    }
 
 }

@@ -8,8 +8,9 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)
 public class AuthDataBlock {
-    private String orgCode;
+    private Long orgCode;
     private Date effDate;
     private String programId;
     private String primaryKey;

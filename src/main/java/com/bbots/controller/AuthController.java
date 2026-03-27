@@ -23,6 +23,9 @@ public class AuthController {
     private AuthService service;
 
     @Autowired
+    private org.springframework.jdbc.core.JdbcTemplate jdbcTemplate;
+
+    @Autowired
     private UserService userService;
 
     @Autowired
@@ -63,6 +66,11 @@ public class AuthController {
         service.reject(authSl, level, userId);
     }
 
+    @GetMapping("/debug/proc")
+    public java.util.List<String> debugProc(@RequestParam String name) {
+        return jdbcTemplate.queryForList("SELECT prosrc FROM pg_proc WHERE proname = ?", String.class, name);
+    }
+
     @ExceptionHandler(Exception.class)
     public org.springframework.http.ResponseEntity<String> handleExceptions(Exception e) {
         e.printStackTrace();
@@ -84,9 +92,10 @@ class Auth002Controller {
     @PostMapping("/auth002")
     public void submitAuth002(@RequestBody Map<String, Object> payload) {
         try {
-            // Check what program it is. Currently we only handle USR-CRT here based on flutter app
+            // Check what program it is. Currently we only handle USR-CRT here based on
+            // flutter app
             String programId = (String) payload.get("PROGRAMID");
-            
+
             if ("USR-CRT".equals(programId)) {
                 // Get the DATABLOCK which is the User JSON
                 String datablock = (String) payload.get("DATABLOCK");
@@ -94,7 +103,8 @@ class Auth002Controller {
                 userService.createUserAuthRequest(user);
             } else {
                 // If it's something else, we could handle it here or throw an error
-                throw new UnsupportedOperationException("Program ID " + programId + " not supported on this endpoint yet.");
+                throw new UnsupportedOperationException(
+                        "Program ID " + programId + " not supported on this endpoint yet.");
             }
         } catch (Exception e) {
             throw new RuntimeException("Error processing Auth002 submission", e);

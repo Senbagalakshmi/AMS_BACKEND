@@ -31,7 +31,10 @@ public class RoleController {
 
     @PostMapping
     public void createRole(@RequestBody Role role) {
-        authProcedureService.processAuthorization("101", "ROLE-CRT", "ROLE001", role);
+        if (role.getOrgcode() == null) {
+            role.setOrgcode(50L);
+        }
+        authProcedureService.processAuthorization(role.getOrgcode(), "ROLE-CRT", "ROLE001", role);
     }
 
     @PutMapping

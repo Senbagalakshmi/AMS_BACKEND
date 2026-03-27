@@ -31,7 +31,10 @@ public class UserRoleController {
 
     @PostMapping
     public void assign(@RequestBody UserRoleAssign ura) {
-        authProcedureService.processAuthorization("101", "USR-ROLE", "USERS002", ura);
+        if (ura.getOrgcode() == null) {
+            ura.setOrgcode(50L);
+        }
+        authProcedureService.processAuthorization(ura.getOrgcode(), "USR-ROLE", "USERS002", ura);
     }
 
     @DeleteMapping("/{userScd}/{roleCd}")

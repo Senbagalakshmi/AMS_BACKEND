@@ -15,7 +15,7 @@ public class RoleRepository {
     private JdbcTemplate jdbcTemplate;
 
     private final RowMapper<Role> roleMapper = (rs, rowNum) -> new Role(
-            rs.getInt("ORGCODE"),
+            rs.getLong("ORGCODE"),
             rs.getInt("ROLECD"),
             rs.getString("ROLENAME"),
             rs.getString("ROLETYPE"),
@@ -44,17 +44,17 @@ public class RoleRepository {
     public void save(Role role) {
         String sql = "INSERT INTO ROLE001 (ORGCODE, ROLECD, ROLENAME, ROLETYPE, ROLESUBTYPE, VIEWACCESS, AUTHACCESS, MAKERACCESS, ADMINACCESS, SYSADMINACCESS, EUSER) " +
                      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        jdbcTemplate.update(sql, role.getOrgCode(), role.getRoleCd(), role.getRoleName(), role.getRoleType(),
-                role.getRoleSubtype(), role.getViewAccess(), role.getAuthAccess(), role.getMakerAccess(),
-                role.getAdminAccess(), role.getSysAdminAccess(), role.getEUser());
+        jdbcTemplate.update(sql, role.getOrgcode(), role.getRolecd(), role.getRolename(), role.getRoletype(),
+                role.getRolesubtype(), role.getViewaccess(), role.getAuthaccess(), role.getMakeraccess(),
+                role.getAdminaccess(), role.getSysadminaccess(), role.getEUser());
     }
 
     public void update(Role role) {
         String sql = "UPDATE ROLE001 SET ORGCODE=?, ROLENAME=?, ROLETYPE=?, ROLESUBTYPE=?, VIEWACCESS=?, AUTHACCESS=?, MAKERACCESS=?, ADMINACCESS=?, SYSADMINACCESS=?, CUSER=?, CDATE=CURRENT_TIMESTAMP " +
                      "WHERE ROLECD=?";
-        jdbcTemplate.update(sql, role.getOrgCode(), role.getRoleName(), role.getRoleType(), role.getRoleSubtype(),
-                role.getViewAccess(), role.getAuthAccess(), role.getMakerAccess(), role.getAdminAccess(),
-                role.getSysAdminAccess(), role.getCUser(), role.getRoleCd());
+        jdbcTemplate.update(sql, role.getOrgcode(), role.getRolename(), role.getRoletype(), role.getRolesubtype(),
+                role.getViewaccess(), role.getAuthaccess(), role.getMakeraccess(), role.getAdminaccess(),
+                role.getSysadminaccess(), role.getCUser(), role.getRolecd());
     }
 
     public void delete(Integer roleCd) {

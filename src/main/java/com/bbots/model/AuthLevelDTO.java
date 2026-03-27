@@ -8,8 +8,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AuthLevelDTO {
-    private String permissionType;
+    @com.fasterxml.jackson.annotation.JsonProperty("permissionType")
+    private String permissiontype;
     private int level;
-    private String roleCd;
-    private String userId;
+    @com.fasterxml.jackson.annotation.JsonProperty("roleCd")
+    private String rolecd;
+    @com.fasterxml.jackson.annotation.JsonProperty("userId")
+    private String userid;
 }
