@@ -40,8 +40,12 @@ public class UserRepository {
         return jdbcTemplate.query("SELECT * FROM USERS001", userMapper);
     }
 
-    public User findById(String userscd) {
-        return jdbcTemplate.queryForObject("SELECT * FROM USERS001 WHERE USERSCD = ?", userMapper, userscd);
+    public User findById(Long userscd) {
+        return jdbcTemplate.queryForObject(
+            "SELECT * FROM USERS001 WHERE USERSCD = ?",
+            userMapper,
+            userscd
+        );
     }
 
     public void save(User user) {
@@ -63,4 +67,23 @@ public class UserRepository {
     public void delete(String userscd) {
         jdbcTemplate.update("DELETE FROM USERS001 WHERE USERSCD = ?", userscd);
     }
+    public Object[] getUserProfileByUsername(String username) {
+
+        String sql =
+                "SELECT CONCAT(u1.FNAME,' ',u1.LNAME) username, " +
+                "u1.EMAIL email, " +
+                "r.ROLENAME role " +
+                "FROM USERS001 u1 " +
+                "LEFT JOIN USERS002 u2 ON u1.USERSCD = u2.USERSCD " +
+                "LEFT JOIN ROLE001 r ON u2.ROLECD = r.ROLECD " +
+                "WHERE u1.EMAIL = ?";
+
+        return jdbcTemplate.queryForObject(sql,
+                (rs, rowNum) -> new Object[]{
+                        rs.getString("username"),
+                        rs.getString("email"),
+                        rs.getString("role")
+                }, username);
+    }
+    
 }
