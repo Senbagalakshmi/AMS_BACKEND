@@ -9,7 +9,6 @@ import com.bbots.model.AuthRecord;
 import com.bbots.model.AuthDataBlock;
 import com.bbots.repository.AuthRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.bbots.dto.UserProfileDTO;
 
 import java.util.Collections;
 import java.util.Date;
@@ -31,7 +30,7 @@ public class UserService {
         return repository.findAll();
     }
 
-    public User getUserById(Long userscd) {
+    public User getUserById(String userscd) {
         return repository.findById(userscd);
     }
 
@@ -72,20 +71,5 @@ public class UserService {
 
     public void deleteUser(String userscd) {
         repository.delete(userscd);
-    }
-    public UserProfileDTO getUserProfileByUsername(String username) {
-
-        Object[] data = repository.getUserProfileByUsername(username);
-
-        System.out.println("USERNAME : " + data[0]);
-        System.out.println("EMAIL : " + data[1]);
-        System.out.println("ROLE : " + data[2]);
-
-        UserProfileDTO dto = new UserProfileDTO();
-        dto.setUsername((String) data[0]);
-        dto.setEmail((String) data[1]);
-        dto.setRole((String) data[2]);
-
-        return dto;
     }
 }
