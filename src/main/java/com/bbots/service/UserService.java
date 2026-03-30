@@ -9,10 +9,12 @@ import com.bbots.model.AuthRecord;
 import com.bbots.model.AuthDataBlock;
 import com.bbots.repository.AuthRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.bbots.dto.UserProfileDTO;
+
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+
+import com.bbots.dto.UserProfileDTO;
 
 @Service
 public class UserService {
@@ -43,8 +45,9 @@ public class UserService {
             String userJson = objectMapper.writeValueAsString(user);
 
             AuthRecord authRecord = new AuthRecord();
+            authRecord.setAuthSl(user.getAuthsl());
             authRecord.setOrgCode(user.getOrgcode());
-            authRecord.setProgramId("AUTH002"); // Adjust your Program ID appropriately
+            authRecord.setProgramId("USR-CRT"); 
             authRecord.setDisplayRemarks("User Creation Request for " + user.getUserscd());
             authRecord.setEntryUser(user.getEuser());
 
@@ -72,6 +75,7 @@ public class UserService {
     public void deleteUser(String userscd) {
         repository.delete(userscd);
     }
+    
     public UserProfileDTO getUserProfileByUsername(String username) {
 
         Object[] data = repository.getUserProfileByUsername(username);

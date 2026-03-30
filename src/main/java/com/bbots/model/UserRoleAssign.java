@@ -15,9 +15,9 @@ public class UserRoleAssign {
     private String userscd;
     @com.fasterxml.jackson.annotation.JsonProperty("roleCd")
     private Integer rolecd;
-    
+
     @com.fasterxml.jackson.annotation.JsonProperty("roleName")
-    @com.fasterxml.jackson.annotation.JsonAlias({"roleName", "rolename", "role_name"})
+    @com.fasterxml.jackson.annotation.JsonAlias({ "roleName", "rolename", "role_name" })
     private String roleName;
 
     @com.fasterxml.jackson.annotation.JsonProperty("eUser")

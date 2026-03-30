@@ -30,8 +30,7 @@ public class RoleRepository {
             rs.getString("AUSER"),
             rs.getTimestamp("ADATE"),
             rs.getString("CUSER"),
-            rs.getTimestamp("CDATE")
-    );
+            rs.getTimestamp("CDATE"));
 
     public List<Role> findAll() {
         return jdbcTemplate.query("SELECT * FROM ROLE001", roleMapper);
@@ -42,16 +41,18 @@ public class RoleRepository {
     }
 
     public void save(Role role) {
-        String sql = "INSERT INTO ROLE001 (ORGCODE, ROLECD, ROLENAME, ROLETYPE, ROLESUBTYPE, VIEWACCESS, AUTHACCESS, MAKERACCESS, ADMINACCESS, SYSADMINACCESS, EUSER) " +
-                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO ROLE001 (ORGCODE, ROLECD, ROLENAME, ROLETYPE, ROLESUBTYPE, VIEWACCESS, AUTHACCESS, MAKERACCESS, ADMINACCESS, SYSADMINACCESS, EUSER) "
+                +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         jdbcTemplate.update(sql, role.getOrgcode(), role.getRolecd(), role.getRolename(), role.getRoletype(),
                 role.getRolesubtype(), role.getViewaccess(), role.getAuthaccess(), role.getMakeraccess(),
                 role.getAdminaccess(), role.getSysadminaccess(), role.getEUser());
     }
 
     public void update(Role role) {
-        String sql = "UPDATE ROLE001 SET ORGCODE=?, ROLENAME=?, ROLETYPE=?, ROLESUBTYPE=?, VIEWACCESS=?, AUTHACCESS=?, MAKERACCESS=?, ADMINACCESS=?, SYSADMINACCESS=?, CUSER=?, CDATE=CURRENT_TIMESTAMP " +
-                     "WHERE ROLECD=?";
+        String sql = "UPDATE ROLE001 SET ORGCODE=?, ROLENAME=?, ROLETYPE=?, ROLESUBTYPE=?, VIEWACCESS=?, AUTHACCESS=?, MAKERACCESS=?, ADMINACCESS=?, SYSADMINACCESS=?, CUSER=?, CDATE=CURRENT_TIMESTAMP "
+                +
+                "WHERE ROLECD=?";
         jdbcTemplate.update(sql, role.getOrgcode(), role.getRolename(), role.getRoletype(), role.getRolesubtype(),
                 role.getViewaccess(), role.getAuthaccess(), role.getMakeraccess(), role.getAdminaccess(),
                 role.getSysadminaccess(), role.getCUser(), role.getRolecd());

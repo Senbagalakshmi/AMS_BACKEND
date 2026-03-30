@@ -14,6 +14,7 @@ import com.bbots.model.AuthRecord;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 @Repository
 public class AuthRepository {
@@ -33,8 +34,7 @@ public class AuthRepository {
             rs.getString("POST_EXEC_METHOD"),
             rs.getString("POST_PROCESS_NAME"),
             rs.getBoolean("IS_TRAN"),
-            rs.getInt("AUTH_LEVELS")
-    );
+            rs.getInt("AUTH_LEVELS"));
 
     // --- AUTH101 Methods ---
     public List<Auth101Config> getAllConfigs() {
@@ -47,8 +47,8 @@ public class AuthRepository {
 
     public void updateConfig(Auth101Config cfg) {
         String sql = "UPDATE AUTH101 SET APPROVAL_REQ = ?, PRE_APPROVE_PROC = ?, PRE_EXEC_METHOD = ?, " +
-                     "PRE_PROCESS_NAME = ?, POST_APPROVE_PROC = ?, POST_EXEC_METHOD = ?, " +
-                     "POST_PROCESS_NAME = ?, AUTH_LEVELS = ? WHERE PROGRAM_ID = ?";
+                "PRE_PROCESS_NAME = ?, POST_APPROVE_PROC = ?, POST_EXEC_METHOD = ?, " +
+                "POST_PROCESS_NAME = ?, AUTH_LEVELS = ? WHERE PROGRAM_ID = ?";
         jdbcTemplate.update(sql, cfg.isApprovalReq(), cfg.isPreApproveProc(), cfg.getPreExecMethod(),
                 cfg.getPreProcessName(), cfg.isPostApproveProc(), cfg.getPostExecMethod(),
                 cfg.getPostProcessName(), cfg.getLevels(), cfg.getId());
@@ -63,13 +63,34 @@ public class AuthRepository {
             record.setProgramId(rs.getString("PROGRAMID"));
             record.setAuthSl(rs.getLong("AUTHSL"));
             record.setDisplayRemarks(rs.getString("DISPLAY_REMARKS"));
-            record.setFlUser(rs.getInt("FLUSER"));
+            record.setFlUser(rs.getString("FLUSER"));
             record.setEntryUser(rs.getString("EUSER"));
             record.setEntryDate(rs.getTimestamp("EDATE"));
+            record.setCorrectionReq(rs.getInt("CORRECTIONREQ") == 1);
+            record.setCorrectionDlts(rs.getString("CORRECTIONDLTS"));
             // Fetch blocks
             record.setDataBlocks(getDataBlocks(record.getAuthSl()));
             return record;
         });
+    }
+
+    public List<AuthRecord> getQueueByUser(String userId) {
+        String sql = "SELECT * FROM AUTH001 WHERE EUSER = ? ORDER BY EDATE DESC";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+            AuthRecord record = new AuthRecord();
+            record.setOrgCode(rs.getLong("ORGCODE"));
+            record.setProgramId(rs.getString("PROGRAMID"));
+            record.setAuthSl(rs.getLong("AUTHSL"));
+            record.setDisplayRemarks(rs.getString("DISPLAY_REMARKS"));
+            record.setFlUser(rs.getString("FLUSER"));
+            record.setEntryUser(rs.getString("EUSER"));
+            record.setEntryDate(rs.getTimestamp("EDATE"));
+            record.setCorrectionReq(rs.getInt("CORRECTIONREQ") == 1);
+            record.setCorrectionDlts(rs.getString("CORRECTIONDLTS"));
+            // Fetch blocks
+            record.setDataBlocks(getDataBlocks(record.getAuthSl()));
+            return record;
+        }, userId);
     }
 
     public String getProgramId(Long authSl) {
@@ -91,30 +112,54 @@ public class AuthRepository {
             return block;
         }, authSl);
     }
-    
+
     public void insertAuthRequest(AuthRecord record) {
+        if (record.getAuthSl() != null && record.getAuthSl() > 0) {
+            // Update existing record (Resubmission)
+            String sqlUpdate = "UPDATE AUTH001 SET CORRECTIONREQ = 0, CORRECTIONDLTS = NULL, " +
+                    "FLUSER = '0', SLUSER = '0', TLUSER = '0', " +
+                    "DISPLAY_REMARKS = ?, EDATE = CURRENT_TIMESTAMP WHERE AUTHSL = ?";
+            jdbcTemplate.update(sqlUpdate, record.getDisplayRemarks(), record.getAuthSl());
+
+            // Re-insert data blocks
+            jdbcTemplate.update("DELETE FROM AUTH002 WHERE AUTHSL = ?", record.getAuthSl());
+            if (record.getDataBlocks() != null) {
+                String sql002 = "INSERT INTO AUTH002 (ORGCODE, EFFDATE, PROGRAMID, PRIMARYKEY, AUTHSL, RECSL, TABLENAME, DATABLOCK) "
+                        +
+                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+                for (AuthDataBlock block : record.getDataBlocks()) {
+                    jdbcTemplate.update(sql002, block.getOrgCode(), block.getEffDate(), block.getProgramId(),
+                            block.getPrimaryKey(), record.getAuthSl(), block.getRecSl(), block.getTableName(),
+                            block.getDataBlock());
+                }
+            }
+            return;
+        }
+
         String sql001 = "INSERT INTO AUTH001 (ORGCODE, PROGRAMID, DISPLAY_REMARKS, " +
-                        "FLUSER, FLDATE, SLUSER, SLDATE, TLUSER, TLDATE, EUSER, EDATE) " +
-                        "VALUES (?, ?, ?, '0', NULL, '0', NULL, '0', NULL, ?, CURRENT_TIMESTAMP) " +
-                        "RETURNING AUTHSL";
-                        
-        Long authSl = jdbcTemplate.queryForObject(sql001, Long.class, 
-            record.getOrgCode(), record.getProgramId(), record.getDisplayRemarks(), record.getEntryUser());
-            
+                "FLUSER, FLDATE, SLUSER, SLDATE, TLUSER, TLDATE, EUSER, EDATE) " +
+                "VALUES (?, ?, ?, '0', NULL, '0', NULL, '0', NULL, ?, CURRENT_TIMESTAMP) " +
+                "RETURNING AUTHSL";
+
+        Long authSl = jdbcTemplate.queryForObject(sql001, Long.class,
+                record.getOrgCode(), record.getProgramId(), record.getDisplayRemarks(), record.getEntryUser());
+
         if (record.getDataBlocks() != null && authSl != null) {
-            String sql002 = "INSERT INTO AUTH002 (ORGCODE, EFFDATE, PROGRAMID, PRIMARYKEY, AUTHSL, RECSL, TABLENAME, DATABLOCK) " +
-                            "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            String sql002 = "INSERT INTO AUTH002 (ORGCODE, EFFDATE, PROGRAMID, PRIMARYKEY, AUTHSL, RECSL, TABLENAME, DATABLOCK) "
+                    +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
             for (AuthDataBlock block : record.getDataBlocks()) {
-                jdbcTemplate.update(sql002, 
-                    block.getOrgCode(), block.getEffDate(), block.getProgramId(), block.getPrimaryKey(),
-                    authSl, block.getRecSl(), block.getTableName(), block.getDataBlock());
+                jdbcTemplate.update(sql002,
+                        block.getOrgCode(), block.getEffDate(), block.getProgramId(), block.getPrimaryKey(),
+                        authSl, block.getRecSl(), block.getTableName(), block.getDataBlock());
             }
         }
     }
 
-    public void processAuth(Long authSl, int level, String userId, int status) {
-        String sql = "CALL pr_process_approval(?, ?, ?, ?)";
-        jdbcTemplate.update(sql, authSl, level, userId, status);
+    public void processAuth(Long authSl, int level, String userId, int status, String remarks) {
+        String sql = "CALL pr_process_approval(?, ?, ?, ?, ?)";
+        jdbcTemplate.update(sql, authSl, level, SecurityContextHolder.getContext().getAuthentication().getName(),
+                status, remarks);
     }
 
     // --- AUTHCTL Configuration Methods ---
@@ -132,7 +177,7 @@ public class AuthRepository {
             dto.setPostExecMethod(rs.getString("POST_EXEC_METHOD"));
             dto.setPostProcessName(rs.getString("POST_PROCESSNAME"));
             dto.setIsTranPgm(rs.getInt("ISTRANPGM"));
-            
+
             String sql102 = "SELECT * FROM AUTH102 WHERE PROGRAMID = ?";
             List<AuthLevelDTO> levels = jdbcTemplate.query(sql102, (rs2, rowNum2) -> {
                 AuthLevelDTO lvl = new AuthLevelDTO();
@@ -153,19 +198,22 @@ public class AuthRepository {
         jdbcTemplate.update("DELETE FROM AUTH101 WHERE PROGRAMID = ?", dto.getProgramId());
 
         String sql101 = "INSERT INTO AUTH101 (ORGCODE, PROGRAMID, APPROVALREQ, PRE_APPROVE_PROC, PRE_EXEC_METHOD, " +
-                        "PRE_PROCESSNAME, POST_APPROVE_PROC, POST_EXEC_METHOD, POST_PROCESSNAME, ISTRANPGM, EUSER, EDATE) " +
-                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'SYSTEM', CURRENT_TIMESTAMP)";
-        jdbcTemplate.update(sql101, 
-            dto.getOrgCode(), dto.getProgramId(), dto.getApprovalReq(), dto.getPreApproveProc(), dto.getPreExecMethod(),
-            dto.getPreProcessName(), dto.getPostApproveProc(), dto.getPostExecMethod(), dto.getPostProcessName(),
-            dto.getIsTranPgm());
+                "PRE_PROCESSNAME, POST_APPROVE_PROC, POST_EXEC_METHOD, POST_PROCESSNAME, ISTRANPGM, EUSER, EDATE) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)";
+        jdbcTemplate.update(sql101,
+                dto.getOrgCode(), dto.getProgramId(), dto.getApprovalReq(), dto.getPreApproveProc(),
+                dto.getPreExecMethod(),
+                dto.getPreProcessName(), dto.getPostApproveProc(), dto.getPostExecMethod(), dto.getPostProcessName(),
+                dto.getIsTranPgm(), dto.getEntryUser());
 
         if (dto.getAuthLevels() != null) {
-            String sql102 = "INSERT INTO AUTH102 (ORGCODE, PROGRAMID, PERMISSIONTYPE, LEVELS, ROLECD, USERID, EUSER, EDATE) " +
-                            "VALUES (?, ?, ?, ?, ?, ?, 'SYSTEM', CURRENT_TIMESTAMP)";
+            String sql102 = "INSERT INTO AUTH102 (ORGCODE, PROGRAMID, PERMISSIONTYPE, LEVELS, ROLECD, USERID, EUSER, EDATE) "
+                    +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)";
             for (AuthLevelDTO level : dto.getAuthLevels()) {
                 jdbcTemplate.update(sql102,
-                    dto.getOrgCode(), dto.getProgramId(), level.getPermissiontype(), level.getLevel(), level.getRolecd(), level.getUserid());
+                        dto.getOrgCode(), dto.getProgramId(), level.getPermissiontype(), level.getLevel(),
+                        level.getRolecd(), level.getUserid(), dto.getEntryUser());
             }
         }
     }

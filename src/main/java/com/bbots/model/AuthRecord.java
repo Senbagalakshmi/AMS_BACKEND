@@ -14,16 +14,18 @@ public class AuthRecord {
     private String programId;
     private Long authSl;
     private String displayRemarks;
-    private int flUser;
+    private String flUser;
     private String flUserId;
     private Date flUserDate;
-    private int slUser;
+    private String slUser;
     private String slUserId;
     private Date slUserDate;
-    private int tlUser;
+    private String tlUser;
     private String tlUserId;
     private Date tlUserDate;
     private String entryUser;
     private Date entryDate;
+    private boolean correctionReq;
+    private String correctionDlts;
     private List<AuthDataBlock> dataBlocks;
 }

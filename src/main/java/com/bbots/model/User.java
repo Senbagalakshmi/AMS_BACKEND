@@ -40,4 +40,8 @@ public class User {
     private Date cdate;
     @com.fasterxml.jackson.annotation.JsonProperty("clientCd")
     private String clientcd;
+	public Long getAuthsl() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

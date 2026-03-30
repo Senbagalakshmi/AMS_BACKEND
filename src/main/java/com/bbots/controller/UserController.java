@@ -2,12 +2,14 @@ package com.bbots.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import com.bbots.dto.UserProfileDTO;
-import com.bbots.util.JwtUtil;
-import javax.servlet.http.HttpServletRequest;
+
 import com.bbots.model.User;
 import com.bbots.service.UserService;
 import com.bbots.service.AuthorizationProcedureService;
+
+import com.bbots.dto.UserProfileDTO;
+import com.bbots.util.JwtUtil;
+import javax.servlet.http.HttpServletRequest;
 
 import java.util.List;
 
@@ -15,10 +17,10 @@ import java.util.List;
 @RequestMapping("/api/users")
 @CrossOrigin(origins = "*")
 public class UserController {
-
+	
 	@Autowired
 	private JwtUtil jwtUtil;
-	
+
     @Autowired
     private UserService service;
 
@@ -52,6 +54,7 @@ public class UserController {
     public void deleteUser(@PathVariable String userscd) {
         service.deleteUser(userscd);
     }
+    
     @GetMapping("/profile")
     public UserProfileDTO getProfile(HttpServletRequest request) {
 

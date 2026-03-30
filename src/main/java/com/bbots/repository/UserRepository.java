@@ -33,13 +33,16 @@ public class UserRepository {
             rs.getTimestamp("ADATE"),
             rs.getString("CUSER"),
             rs.getTimestamp("CDATE"),
-            rs.getString("CLIENTCD")
-    );
+            rs.getString("CLIENTCD"));
 
     public List<User> findAll() {
         return jdbcTemplate.query("SELECT * FROM USERS001", userMapper);
     }
 
+    public User findById(String userscd) {
+        return jdbcTemplate.queryForObject("SELECT * FROM USERS001 WHERE USERSCD = ?", userMapper, userscd);
+    }
+    
     public User findById(Long userscd) {
         return jdbcTemplate.queryForObject(
             "SELECT * FROM USERS001 WHERE USERSCD = ?",
@@ -47,26 +50,18 @@ public class UserRepository {
             userscd
         );
     }
+    
 
     public void save(User user) {
-        String sql = "INSERT INTO USERS001 (ORGCODE, USERSCD, MENUTYPE, GENDER, TITLE, FNAME, MNAME, LNAME, EMAIL, MOBILE, COUNTRY, EUSER, CLIENTCD) " +
-                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO USERS001 (ORGCODE, USERSCD, MENUTYPE, GENDER, TITLE, FNAME, MNAME, LNAME, EMAIL, MOBILE, COUNTRY, EUSER, CLIENTCD) "
+                +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         jdbcTemplate.update(sql, user.getOrgcode(), user.getUserscd(), user.getMenutype(), user.getGender(),
                 user.getTitle(), user.getFname(), user.getMname(), user.getLname(), user.getEmail(),
                 user.getMobile(), user.getCountry(), user.getEuser(), user.getClientcd());
     }
-
-    public void update(User user) {
-        String sql = "UPDATE USERS001 SET ORGCODE=?, MENUTYPE=?, GENDER=?, TITLE=?, FNAME=?, MNAME=?, LNAME=?, EMAIL=?, MOBILE=?, COUNTRY=?, CLIENTCD=? " +
-                     "WHERE USERSCD=?";
-        jdbcTemplate.update(sql, user.getOrgcode(), user.getMenutype(), user.getGender(), user.getTitle(),
-                user.getFname(), user.getMname(), user.getLname(), user.getEmail(), user.getMobile(),
-                user.getCountry(), user.getClientcd(), user.getUserscd());
-    }
-
-    public void delete(String userscd) {
-        jdbcTemplate.update("DELETE FROM USERS001 WHERE USERSCD = ?", userscd);
-    }
+    
+    
     public Object[] getUserProfileByUsername(String username) {
 
         String sql =
@@ -86,4 +81,17 @@ public class UserRepository {
                 }, username);
     }
     
+
+    public void update(User user) {
+        String sql = "UPDATE USERS001 SET ORGCODE=?, MENUTYPE=?, GENDER=?, TITLE=?, FNAME=?, MNAME=?, LNAME=?, EMAIL=?, MOBILE=?, COUNTRY=?, CLIENTCD=? "
+                +
+                "WHERE USERSCD=?";
+        jdbcTemplate.update(sql, user.getOrgcode(), user.getMenutype(), user.getGender(), user.getTitle(),
+                user.getFname(), user.getMname(), user.getLname(), user.getEmail(), user.getMobile(),
+                user.getCountry(), user.getClientcd(), user.getUserscd());
+    }
+
+    public void delete(String userscd) {
+        jdbcTemplate.update("DELETE FROM USERS001 WHERE USERSCD = ?", userscd);
+    }
 }

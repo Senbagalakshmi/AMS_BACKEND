@@ -28,8 +28,7 @@ public class ModuleRepository {
             rs.getTimestamp("CDATE"),
             rs.getString("CUSER"),
             rs.getTimestamp("ADATE"),
-            rs.getString("AUSER")
-    );
+            rs.getString("AUSER"));
 
     private final RowMapper<SubModule> subModuleMapper = (rs, rowNum) -> new SubModule(
             rs.getLong("ORGCODE"),
@@ -42,8 +41,7 @@ public class ModuleRepository {
             rs.getTimestamp("CDATE"),
             rs.getString("CUSER"),
             rs.getTimestamp("ADATE"),
-            rs.getString("AUSER")
-    );
+            rs.getString("AUSER"));
 
     // --- Module Methods ---
     public List<Module> findAllModules() {
@@ -56,12 +54,14 @@ public class ModuleRepository {
 
     public void saveModule(Module m) {
         String sql = "INSERT INTO MODULE001 (ORGCODE, MODULE_ID, MODULENAME, SUB_MODULE, status, EUSER) VALUES (?, ?, ?, ?, ?, ?)";
-        jdbcTemplate.update(sql, m.getOrgcode(), m.getModuleId(), m.getModuleName(), m.getSubModuleRequired(), m.getStatus(), m.getEUser());
+        jdbcTemplate.update(sql, m.getOrgcode(), m.getModuleId(), m.getModuleName(), m.getSubModuleRequired(),
+                m.getStatus(), m.getEUser());
     }
 
     public void updateModule(Module m) {
         String sql = "UPDATE MODULE001 SET MODULENAME=?, SUB_MODULE=?, status=?, CUSER=?, CDATE=CURRENT_TIMESTAMP WHERE MODULE_ID=? AND ORGCODE=?";
-        jdbcTemplate.update(sql, m.getModuleName(), m.getSubModuleRequired(), m.getStatus(), m.getCUser(), m.getModuleId(), m.getOrgcode());
+        jdbcTemplate.update(sql, m.getModuleName(), m.getSubModuleRequired(), m.getStatus(), m.getCUser(),
+                m.getModuleId(), m.getOrgcode());
     }
 
     public void deleteModule(Integer id) {
@@ -75,12 +75,14 @@ public class ModuleRepository {
 
     public void saveSubModule(SubModule sm) {
         String sql = "INSERT INTO MODULE002 (ORGCODE, MODULE_ID, SUB_MODULEID, SUB_MODULENAME, status, EUSER) VALUES (?, ?, ?, ?, ?, ?)";
-        jdbcTemplate.update(sql, sm.getOrgcode(), sm.getModuleId(), sm.getSubModuleId(), sm.getSubModuleName(), sm.getStatus(), sm.getEUser());
+        jdbcTemplate.update(sql, sm.getOrgcode(), sm.getModuleId(), sm.getSubModuleId(), sm.getSubModuleName(),
+                sm.getStatus(), sm.getEUser());
     }
 
     public void updateSubModule(SubModule sm) {
         String sql = "UPDATE MODULE002 SET SUB_MODULENAME=?, status=?, CUSER=?, CDATE=CURRENT_TIMESTAMP WHERE MODULE_ID=? AND SUB_MODULEID=? AND ORGCODE=?";
-        jdbcTemplate.update(sql, sm.getSubModuleName(), sm.getStatus(), sm.getCUser(), sm.getModuleId(), sm.getSubModuleId(), sm.getOrgcode());
+        jdbcTemplate.update(sql, sm.getSubModuleName(), sm.getStatus(), sm.getCUser(), sm.getModuleId(),
+                sm.getSubModuleId(), sm.getOrgcode());
     }
 
     public void deleteSubModule(Integer moduleId, Integer subModuleId) {

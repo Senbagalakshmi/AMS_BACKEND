@@ -19,5 +19,6 @@ public class AuthConfigDTO {
     private String postExecMethod;
     private String postProcessName;
     private int isTranPgm;
+    private String entryUser;
     private List<AuthLevelDTO> authLevels;
 }
