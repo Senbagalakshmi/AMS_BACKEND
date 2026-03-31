@@ -19,7 +19,7 @@ public class GlAttributesRepository {
 	
 	
 	private final RowMapper<GlAttributes> glAttributes = (rs, rowNum) -> new GlAttributes(
-			 rs.getInt("ORGCODE"),
+			 rs.getLong("ORGCODE"),
 			 rs.getInt("GLNO"),
 			 rs.getString("GLATTRID"),
 			 rs.getString("GLATTRVALUE"),

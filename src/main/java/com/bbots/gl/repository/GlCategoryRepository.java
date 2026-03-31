@@ -17,7 +17,7 @@ public class GlCategoryRepository {
     private JdbcTemplate jdbcTemplate;
 	
 	 private final RowMapper<GlCategory> glCategory = (rs, rowNum) -> new GlCategory(
-			 rs.getInt("ORGCODE"),
+			 rs.getLong("ORGCODE"),
 			 rs.getInt("GLCATCD"),
 			 rs.getString("GLCATNAME"),
 			 rs.getString("GLCATTYPE"),

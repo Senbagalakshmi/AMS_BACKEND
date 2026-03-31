@@ -18,7 +18,7 @@ public class GlBranchRepository {
 	
 	
 	private final RowMapper<GlBranch> glBranch = (rs, rowNum) -> new GlBranch(
-			 rs.getInt("ORGCODE"),
+			 rs.getLong("ORGCODE"),
 			 rs.getInt("GLNO"),
 			 rs.getString("ALLOWEDCURR"),
 			 rs.getString("EUSER"),
