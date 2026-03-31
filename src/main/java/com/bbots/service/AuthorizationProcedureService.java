@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -26,7 +27,7 @@ public class AuthorizationProcedureService {
      * @param payload     The DTO / Entity to be serialized to JSON
      */
     public void processAuthorization(Long orgCode, String programId, String tableName, Object payload) {
-        String sql = "CALL pr_handle_authorization(?::bigint, ?::varchar, ?::varchar, ?::json)";
+        String sql = "CALL pr_handle_authorization(?::bigint, ?::varchar, ?::varchar, ?::varchar, ?::json)";
         try {
             // Convert to Map and lowercase all keys so PostgreSQL's json_populate_record seamlessly maps them to its lowercase table columns
             java.util.Map<String, Object> map = objectMapper.convertValue(payload, new com.fasterxml.jackson.core.type.TypeReference<java.util.Map<String, Object>>() {});
@@ -38,7 +39,7 @@ public class AuthorizationProcedureService {
             }
             String jsonPayload = objectMapper.writeValueAsString(lowerCaseMap);
             
-            jdbcTemplate.update(sql, orgCode, programId, tableName, jsonPayload);
+            jdbcTemplate.update(sql, orgCode, programId, SecurityContextHolder.getContext().getAuthentication().getName(), tableName, jsonPayload);
             System.out.println("Successfully called auth procedure for: " + programId);
             System.out.println("Payload: " + jsonPayload);
         } catch (com.fasterxml.jackson.core.JsonProcessingException e) {

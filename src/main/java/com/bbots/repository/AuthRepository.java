@@ -3,6 +3,7 @@ package com.bbots.repository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Repository;
 
 import com.bbots.model.Auth101Config;
@@ -113,8 +114,8 @@ public class AuthRepository {
     }
 
     public void processAuth(Long authSl, int level, String userId, int status) {
-        String sql = "CALL pr_process_approval(?, ?, ?, ?)";
-        jdbcTemplate.update(sql, authSl, level, userId, status);
+        String sql = "CALL pr_process_approval(?, ?, ?, ?, ?)";
+        jdbcTemplate.update(sql, authSl, level, SecurityContextHolder.getContext().getAuthentication().getName(), userId, status);
     }
 
     // --- AUTHCTL Configuration Methods ---

@@ -40,6 +40,15 @@ public class UserRepository {
         return jdbcTemplate.query("SELECT * FROM USERS001", userMapper);
     }
 
+    public List<User> findAll(int limit, int offset) {
+        String sql = "SELECT * FROM USERS001 LIMIT ? OFFSET ?";
+        return jdbcTemplate.query(sql, userMapper, limit, offset);
+    }
+
+    public long count() {
+        return jdbcTemplate.queryForObject("SELECT count(*) FROM USERS001", Long.class);
+    }
+
     public User findById(Long userscd) {
         return jdbcTemplate.queryForObject(
             "SELECT * FROM USERS001 WHERE USERSCD = ?",

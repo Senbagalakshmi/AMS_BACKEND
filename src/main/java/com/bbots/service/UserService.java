@@ -12,7 +12,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.bbots.dto.UserProfileDTO;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class UserService {
@@ -28,6 +30,20 @@ public class UserService {
 
     public List<User> getAllUsers() {
         return repository.findAll();
+    }
+
+    public Map<String, Object> getPaginatedUsers(int page, int size) {
+        int limit = size;
+        int offset = page * size;
+
+        List<User> users = repository.findAll(limit, offset);
+        long totalElements = repository.count();
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("content", users);
+        response.put("totalElements", totalElements);
+
+        return response;
     }
 
     public User getUserById(Long userscd) {

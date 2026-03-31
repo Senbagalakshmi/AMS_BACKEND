@@ -9,7 +9,7 @@ import com.bbots.model.User;
 import com.bbots.service.UserService;
 import com.bbots.service.AuthorizationProcedureService;
 
-import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
@@ -26,8 +26,10 @@ public class UserController {
     private AuthorizationProcedureService authProcedureService;
 
     @GetMapping
-    public List<User> getAllUsers() {
-        return service.getAllUsers();
+    public Map<String, Object> getAllUsers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return service.getPaginatedUsers(page, size);
     }
 
     @GetMapping("/{userscd}")
