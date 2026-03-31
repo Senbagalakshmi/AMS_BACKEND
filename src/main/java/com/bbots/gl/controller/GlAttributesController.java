@@ -12,9 +12,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.bbots.gl.model.GlAttributes;
 import com.bbots.gl.service.GlAttributesService;
+import com.bbots.service.AuthorizationProcedureService;
+
 
 @RestController
 @RequestMapping("/api/gl-attributes")
@@ -24,7 +25,10 @@ public class GlAttributesController {
 	
 	@Autowired
     private GlAttributesService glAttributesService;
+	 @Autowired
+	private AuthorizationProcedureService authProcedureService;
 	
+
 	@GetMapping
     public List<GlAttributes> getAll() {
         return glAttributesService.getAllGlNumber();
@@ -36,8 +40,11 @@ public class GlAttributesController {
     }
 
     @PostMapping
-    public void create(@RequestBody GlAttributes ga) {
-    	glAttributesService.createGlAttributes(ga);
+    public void create(@RequestBody GlAttributes ga) {  	
+    	if (ga.getOrgCode() == null) {
+    		ga.setOrgCode(50L);
+        }
+        authProcedureService.processAuthorization(ga.getOrgCode(), "GL-ATTR", "GL106", ga);
     }
 
     @DeleteMapping("/{glNo}")

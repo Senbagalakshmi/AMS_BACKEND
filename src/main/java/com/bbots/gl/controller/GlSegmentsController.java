@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.bbots.gl.model.GlSegments;
 import com.bbots.gl.service.GlSegmentsService;
+import com.bbots.service.AuthorizationProcedureService;
 
 @RestController
 @RequestMapping("/api/gl-segments")
@@ -23,6 +24,9 @@ public class GlSegmentsController {
 	
 	@Autowired
     private GlSegmentsService glSegmentsService;
+	
+	 @Autowired
+	private AuthorizationProcedureService authProcedureService;
 	
 	@GetMapping
     public List<GlSegments> getAll() {
@@ -36,8 +40,13 @@ public class GlSegmentsController {
 
     @PostMapping
     public void create(@RequestBody GlSegments gs) {
-    	glSegmentsService.createGlSegments(gs);
+    	
+    	if (gs.getOrgCode() == null) {
+    		gs.setOrgCode(50L);
+        }
+        authProcedureService.processAuthorization(gs.getOrgCode(), "GL-", "GL105", gs);
     }
+
 
     @DeleteMapping("/{glNo}")
     public void revoke(@PathVariable Integer glNo) {

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.bbots.gl.model.GlBranch;
 import com.bbots.gl.service.GlBranchService;
+import com.bbots.service.AuthorizationProcedureService;
 
 @RestController
 @RequestMapping("/api/gl-branch")
@@ -24,6 +25,9 @@ public class GlBranchController {
 	
 	@Autowired
     private GlBranchService glBranchService;
+	
+	 @Autowired
+	private AuthorizationProcedureService authProcedureService;
 	
 	@GetMapping
     public List<GlBranch> getAll() {
@@ -37,7 +41,11 @@ public class GlBranchController {
 
     @PostMapping
     public void create(@RequestBody GlBranch gb) {
-    	glBranchService.createGlBranch(gb);
+    	
+    	if (gb.getOrgCode() == null) {
+    		gb.setOrgCode(50L);
+        }
+        authProcedureService.processAuthorization(gb.getOrgCode(), "GL-BRN", "GL104", gb);
     }
 
     @DeleteMapping("/{glNo}")
