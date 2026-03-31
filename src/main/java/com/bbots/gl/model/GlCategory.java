@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class GlCategory {
 	
-	private int orgCode;
+	private Long orgCode;
     private int glCatCd;
     private String glCatName;
     private String glCatType;
