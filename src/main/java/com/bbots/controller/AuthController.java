@@ -56,11 +56,6 @@ public class AuthController {
         return service.getAuthQueue();
     }
 
-    @GetMapping("/my-requests")
-    public List<AuthRecord> getMyRequests(@RequestParam String userId) {
-        return service.getMyRequests(userId);
-    }
-
     @PostMapping("/approve/{authSl}")
     public void approve(@PathVariable Long authSl, @RequestParam int level, @RequestParam String userId) {
         service.approve(authSl, level, userId);
@@ -70,14 +65,19 @@ public class AuthController {
     public void reject(@PathVariable Long authSl, @RequestParam int level, @RequestParam String userId) {
         service.reject(authSl, level, userId);
     }
-
-    @PostMapping("/correction/{authSl}")
+	
+	   @PostMapping("/correction/{authSl}")
     public void correction(
             @PathVariable Long authSl, 
             @RequestParam int level, 
             @RequestParam String userId,
             @RequestParam(required = false) String remarks) {
         service.correction(authSl, level, userId, remarks);
+    }
+
+    @PostMapping("/lock/{authSl}")
+    public void lock(@PathVariable Long authSl) {
+        service.lockRecord(authSl);
     }
 
     @GetMapping("/debug/proc")

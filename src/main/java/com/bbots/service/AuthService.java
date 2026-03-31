@@ -64,33 +64,50 @@ public class AuthService {
         
         // 3. Post-Approval Custom Logic for Module Creation
         if (programId != null && "MOD-CRT".equals(programId.trim())) {
-            // ... (rest of module sync logic stays clean) ...
             try {
+                System.out.println("Executing Post-Approval Sub-Module Sync. Blocks found: " + (blocks != null ? blocks.size() : 0));
                 if (blocks != null) {
                     for (AuthDataBlock block : blocks) {
+                        System.out.println("Processing DataBlock: " + block.getDataBlock());
+                        // Parse the JSON data block
                         Module m = objectMapper.readValue(block.getDataBlock(), Module.class);
+                        
+                        System.out.println("Parsed Module: ID=" + m.getModuleId() + ", SubModuleReq=" + m.getSubModuleRequired());
+                        
+                        // If sub-module is required and details are provided
                         if (m.getSubModuleRequired() != null && m.getSubModuleRequired() == 1) {
                             SubModule sm = new SubModule();
                             sm.setOrgcode(m.getOrgcode());
                             sm.setModuleId(m.getModuleId());
                             sm.setSubModuleId(m.getSubModuleId());
                             sm.setSubModuleName(m.getSubModuleName());
-                            sm.setStatus(1);
+                            sm.setStatus(1); // Enable by default
                             sm.setEUser(m.getEUser());
+                            
+                            System.out.println("Attempting to save SubModule: " + sm.getSubModuleId() + " - " + sm.getSubModuleName());
+                            // Save to Module002
                             moduleRepository.saveSubModule(sm);
+                            System.out.println("✅ Auto-created Sub-Module for Module: " + m.getModuleId());
+                        } else {
+                            System.out.println("ℹ️ Sub-Module NOT required for this module creation.");
                         }
                     }
                 }
             } catch (Exception e) {
+                System.err.println("❌ Error in Post-Approval Sub-Module creation: " + e.getMessage());
                 e.printStackTrace();
             }
         }
     }
 
     public void reject(Long authSl, int level, String userId) {
-        // Status 0 for Reject
-        repository.processAuth(authSl, level, userId, 0, null);
+        repository.processAuth(authSl, level, userId, 0,null);
     }
+
+    public void lockRecord(Long authSl) {
+        repository.lockRecord(authSl);
+    }
+	
 
     public void correction(Long authSl, int level, String userId, String remarks) {
         // Status 2 for Correction Requested
