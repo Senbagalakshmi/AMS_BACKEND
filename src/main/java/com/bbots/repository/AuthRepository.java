@@ -115,7 +115,7 @@ public class AuthRepository {
 
     public void processAuth(Long authSl, int level, String userId, int status) {
         String sql = "CALL pr_process_approval(?, ?, ?, ?, ?)";
-        jdbcTemplate.update(sql, authSl, level, SecurityContextHolder.getContext().getAuthentication().getName(), userId, status);
+        jdbcTemplate.update(sql, authSl, level, SecurityContextHolder.getContext().getAuthentication().getName(), status, userId);
     }
 
     // --- AUTHCTL Configuration Methods ---
