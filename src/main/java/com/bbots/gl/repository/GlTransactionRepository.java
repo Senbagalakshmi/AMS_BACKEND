@@ -19,7 +19,7 @@ public class GlTransactionRepository {
 	
 	
 	private final RowMapper<GlTransation> glTransation = (rs, rowNum) -> new GlTransation(
-			 rs.getInt("ORGCODE"),
+			 rs.getLong("ORGCODE"),
 			 rs.getInt("GLNO"),
 			 rs.getString("ALLOWEDCURR"),
 			 rs.getString("EUSER"),
