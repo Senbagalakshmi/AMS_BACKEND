@@ -17,7 +17,7 @@ public class GlMasterRepository {
 	
 	
 	private final RowMapper<GlMaster> glMaster = (rs, rowNum) -> new GlMaster(
-			 rs.getInt("ORGCODE"),
+			 rs.getLong("ORGCODE"),
 			 rs.getInt("GLNO"),
 			 rs.getString("GLNAME"),
 			 rs.getInt("GLCATCD"),

@@ -18,7 +18,7 @@ public class GlSegmentsRepository {
 	
 	
 	private final RowMapper<GlSegments> glSegments = (rs, rowNum) -> new GlSegments(
-			 rs.getInt("ORGCODE"),
+			 rs.getLong("ORGCODE"),
 			 rs.getInt("GLNO"),
 			 rs.getString("SEGID"),
 			 rs.getString("SEGVALUE"),
