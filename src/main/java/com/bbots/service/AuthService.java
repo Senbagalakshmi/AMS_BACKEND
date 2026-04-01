@@ -48,6 +48,10 @@ public class AuthService {
         return repository.getQueue();
     }
 
+    public List<AuthRecord> getMyRequests(String userId) {
+        return repository.getQueueByUser(userId);
+    }
+
     public void approve(Long authSl, int level, String userId) {
         // 1. Get metadata and data before approval processing (since the procedure may delete it from queue)
         String programId = repository.getProgramId(authSl);
@@ -55,8 +59,8 @@ public class AuthService {
         
         System.out.println("Processing Approval for Program: [" + programId + "] AuthSl: " + authSl);
         
-        // 2. Original Approval Process (Procedure Call)
-        repository.processAuth(authSl, level, userId, 1);
+        // 2. Standard Approval Process (Procedure Call) - Status 1
+        repository.processAuth(authSl, level, userId, 1, null);
         
         // 3. Post-Approval Custom Logic for Module Creation
         if (programId != null && "MOD-CRT".equals(programId.trim())) {
@@ -97,6 +101,16 @@ public class AuthService {
     }
 
     public void reject(Long authSl, int level, String userId) {
-        repository.processAuth(authSl, level, userId, 2);
+        repository.processAuth(authSl, level, userId, 0,null);
+    }
+
+    public void lockRecord(Long authSl) {
+        repository.lockRecord(authSl);
+    }
+	
+
+    public void correction(Long authSl, int level, String userId, String remarks) {
+        // Status 2 for Correction Requested
+        repository.processAuth(authSl, level, userId, 2, remarks);
     }
 }

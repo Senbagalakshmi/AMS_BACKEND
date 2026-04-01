@@ -65,6 +65,20 @@ public class AuthController {
     public void reject(@PathVariable Long authSl, @RequestParam int level, @RequestParam String userId) {
         service.reject(authSl, level, userId);
     }
+	
+	   @PostMapping("/correction/{authSl}")
+    public void correction(
+            @PathVariable Long authSl, 
+            @RequestParam int level, 
+            @RequestParam String userId,
+            @RequestParam(required = false) String remarks) {
+        service.correction(authSl, level, userId, remarks);
+    }
+
+    @PostMapping("/lock/{authSl}")
+    public void lock(@PathVariable Long authSl) {
+        service.lockRecord(authSl);
+    }
 
     @GetMapping("/debug/proc")
     public java.util.List<String> debugProc(@RequestParam String name) {
@@ -98,7 +112,13 @@ class Auth002Controller {
 
             if ("USR-CRT".equals(programId)) {
                 // Get the DATABLOCK which is the User JSON
-                String datablock = (String) payload.get("DATABLOCK");
+                Object datablockObj = payload.get("DATABLOCK");
+                String datablock;
+                if (datablockObj instanceof String) {
+                    datablock = (String) datablockObj;
+                } else {
+                    datablock = objectMapper.writeValueAsString(datablockObj);
+                }
                 User user = objectMapper.readValue(datablock, User.class);
                 userService.createUserAuthRequest(user);
             } else {
