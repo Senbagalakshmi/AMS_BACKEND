@@ -13,54 +13,50 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.bbots.gl.model.GlTransation;
-import com.bbots.gl.service.GlTranscationService;
+import com.bbots.gl.model.GlSegments;
+import com.bbots.gl.service.GlSegmentsService;
 import com.bbots.service.AuthorizationProcedureService;
 
-
-
 @RestController
-@RequestMapping("/api/gl-transcation")
+@RequestMapping("/api/gl-segments")
 @CrossOrigin(origins = "*")
-public class GlTransationController {
-	
+public class GlSegmentsController {
 	
 	@Autowired
-    private GlTranscationService glTranscationService;
+    private GlSegmentsService glSegmentsService;
 	
 	 @Autowired
-    private AuthorizationProcedureService authProcedureService;
+	private AuthorizationProcedureService authProcedureService;
 	
 	@GetMapping
-    public List<GlTransation> getAll() {
-        return glTranscationService.getAllGlNumber();
+    public List<GlSegments> getAll() {
+        return glSegmentsService.getAllGlNumber();
     }
 
     @GetMapping("/{glNo}")
-    public List<GlTransation> getByUserId(@PathVariable Integer glNo) {
-        return glTranscationService.getAssignmentsByUserId(glNo);
+    public List<GlSegments> getByUserId(@PathVariable Integer glNo) {
+        return glSegmentsService.getAssignmentsByUserId(glNo);
     }
 
     @PostMapping
-    public void create(@RequestBody GlTransation gt) {
+    public void create(@RequestBody GlSegments gs) {
     	
-    	if (gt.getOrgCode() == null) {
-    		gt.setOrgCode(50L);
+    	if (gs.getOrgCode() == null) {
+    		gs.setOrgCode(50L);
         }
-        authProcedureService.processAuthorization(gt.getOrgCode(), "GL-TRN", "GL103", gt);
+        authProcedureService.processAuthorization(gs.getOrgCode(), "GL-", "GL105", gs);
     }
 
 
     @DeleteMapping("/{glNo}")
     public void revoke(@PathVariable Integer glNo) {
-    	glTranscationService.revokeRole(glNo);
+    	glSegmentsService.revokeRole(glNo);
     }
     
     @PutMapping
-    public void update(@RequestBody GlTransation gt) {
-    	glTranscationService.updateGlTransation(gt);
+    public void update(@RequestBody GlSegments gs) {
+    	glSegmentsService.updateGlSegments(gs);
     }
 
-	
 
 }

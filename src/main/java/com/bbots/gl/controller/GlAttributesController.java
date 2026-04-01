@@ -12,55 +12,50 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.bbots.gl.model.GlTransation;
-import com.bbots.gl.service.GlTranscationService;
+import com.bbots.gl.model.GlAttributes;
+import com.bbots.gl.service.GlAttributesService;
 import com.bbots.service.AuthorizationProcedureService;
 
 
-
 @RestController
-@RequestMapping("/api/gl-transcation")
+@RequestMapping("/api/gl-attributes")
 @CrossOrigin(origins = "*")
-public class GlTransationController {
+public class GlAttributesController {
 	
 	
 	@Autowired
-    private GlTranscationService glTranscationService;
-	
+    private GlAttributesService glAttributesService;
 	 @Autowired
-    private AuthorizationProcedureService authProcedureService;
+	private AuthorizationProcedureService authProcedureService;
 	
+
 	@GetMapping
-    public List<GlTransation> getAll() {
-        return glTranscationService.getAllGlNumber();
+    public List<GlAttributes> getAll() {
+        return glAttributesService.getAllGlNumber();
     }
 
     @GetMapping("/{glNo}")
-    public List<GlTransation> getByUserId(@PathVariable Integer glNo) {
-        return glTranscationService.getAssignmentsByUserId(glNo);
+    public List<GlAttributes> getByUserId(@PathVariable Integer glNo) {
+        return glAttributesService.getAssignmentsByUserId(glNo);
     }
 
     @PostMapping
-    public void create(@RequestBody GlTransation gt) {
-    	
-    	if (gt.getOrgCode() == null) {
-    		gt.setOrgCode(50L);
+    public void create(@RequestBody GlAttributes ga) {  	
+    	if (ga.getOrgCode() == null) {
+    		ga.setOrgCode(50L);
         }
-        authProcedureService.processAuthorization(gt.getOrgCode(), "GL-TRN", "GL103", gt);
+        authProcedureService.processAuthorization(ga.getOrgCode(), "GL-ATTR", "GL106", ga);
     }
-
 
     @DeleteMapping("/{glNo}")
     public void revoke(@PathVariable Integer glNo) {
-    	glTranscationService.revokeRole(glNo);
+    	glAttributesService.revokeRole(glNo);
     }
     
     @PutMapping
-    public void update(@RequestBody GlTransation gt) {
-    	glTranscationService.updateGlTransation(gt);
+    public void update(@RequestBody GlAttributes ga) {
+    	glAttributesService.updateGlAttributes(ga);
     }
 
-	
 
 }
