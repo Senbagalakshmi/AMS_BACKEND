@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class GlMaster {
 	
-	private int orgCode;
+	private Long orgCode;
     private int glNo;
     private String glName;
     private int glCatCd;

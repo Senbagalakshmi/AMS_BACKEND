@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class GlBranch {
 	
-	private int orgCode;
+	private Long orgCode;
     private int glNo;
     private String allowedBrn;
     private String eUser;
