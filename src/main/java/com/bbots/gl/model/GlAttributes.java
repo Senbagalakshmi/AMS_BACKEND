@@ -1,7 +1,6 @@
 package com.bbots.gl.model;
 
 import java.util.Date;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class GlAttributes {
 
-	private int orgCode;
+	private Long orgCode;
     private int glNo;
     private String glAttrid;
     private String glAttrValue;
@@ -22,3 +21,4 @@ public class GlAttributes {
     private String cUser;
     private Date cDate;
 }
+

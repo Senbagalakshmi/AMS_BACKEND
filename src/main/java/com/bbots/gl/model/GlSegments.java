@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class GlSegments {
 	
-	private int orgCode;
+	private Long orgCode;
     private int glNo;
     private String segId;
     private String segValue;
