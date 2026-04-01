@@ -77,6 +77,7 @@ public class AuthController {
 
     @PostMapping("/lock/{authSl}")
     public void lock(@PathVariable Long authSl) {
+        System.out.println("🚀 Received lock request for authSl: " + authSl);
         service.lockRecord(authSl);
     }
 

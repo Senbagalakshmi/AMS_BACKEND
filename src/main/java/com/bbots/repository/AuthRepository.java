@@ -82,8 +82,14 @@ public class AuthRepository {
 			record.setAuthSl(rs.getLong("AUTHSL"));
 			record.setDisplayRemarks(rs.getString("DISPLAY_REMARKS"));
 			record.setFlUser(rs.getString("FLUSER"));
+			record.setFlUserDate(rs.getTimestamp("FLDATE"));
+			record.setSlUser(rs.getString("SLUSER"));
+			record.setSlUserDate(rs.getTimestamp("SLDATE"));
+			record.setTlUser(rs.getString("TLUSER"));
+			record.setTlUserDate(rs.getTimestamp("TLDATE"));
 			record.setEntryUser(rs.getString("EUSER"));
 			record.setEntryDate(rs.getTimestamp("EDATE"));
+			record.setAuthLock(rs.getInt("AUTHLOCK"));
 			record.setCorrectionReq(rs.getInt("CORRECTIONREQ") == 1);
 			record.setCorrectionDlts(rs.getString("CORRECTIONDLTS"));
 			// Fetch blocks
@@ -152,10 +158,17 @@ public class AuthRepository {
 	}
 
 	public void lockRecord(Long authSl) {
-		// Unlock all others
-		jdbcTemplate.update("UPDATE AUTH001 SET AUTHLOCK = 0 WHERE AUTHSL != ?", authSl);
-		// Lock this one
-		jdbcTemplate.update("UPDATE AUTH001 SET AUTHLOCK = 1 WHERE AUTHSL = ?", authSl);
+		try {
+			System.out.println("🔒 Attempting to lock record: " + authSl);
+			// Unlock all others
+			int unlockedCount = jdbcTemplate.update("UPDATE AUTH001 SET AUTHLOCK = 0 WHERE AUTHSL != ?", authSl);
+			// Lock this one
+			int lockedCount = jdbcTemplate.update("UPDATE AUTH001 SET AUTHLOCK = 1 WHERE AUTHSL = ?", authSl);
+			System.out.println("✅ Unlocked: " + unlockedCount + " records, Locked: " + lockedCount + " records.");
+		} catch (Exception e) {
+			System.err.println("❌ Error locking record " + authSl + ": " + e.getMessage());
+			e.printStackTrace();
+		}
 	}
 
 	public void processAuth(Long authSl, int level, String userId, int status, String remarks) {
