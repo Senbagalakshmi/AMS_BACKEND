@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.bbots.gl.model.GlCategory;
 import com.bbots.gl.service.GlCategoryService;
+import com.bbots.service.AuthorizationProcedureService;
 
 @RestController
 @RequestMapping("/api/gl-category")
@@ -23,6 +24,9 @@ public class GlCategoryController {
 	
 	@Autowired
 	private GlCategoryService glCategoryService;
+	
+	 @Autowired
+	private AuthorizationProcedureService authProcedureService;
 	
 	
 	@GetMapping
@@ -37,7 +41,11 @@ public class GlCategoryController {
 
     @PostMapping
     public void create(@RequestBody GlCategory gl) {
-    	glCategoryService.createGlCategory(gl);
+    	
+    	if (gl.getOrgCode() == null) {
+    		gl.setOrgCode(50L);
+        }
+        authProcedureService.processAuthorization(gl.getOrgCode(), "GL-CAT", "GL101", gl);
     }
 
     @DeleteMapping("/{glCatCd}")

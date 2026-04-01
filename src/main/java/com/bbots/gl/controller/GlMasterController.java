@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.bbots.gl.model.GlMaster;
 import com.bbots.gl.service.GlMasterService;
+import com.bbots.service.AuthorizationProcedureService;
 
 @RestController
 @RequestMapping("/api/gl-master")
@@ -24,6 +25,10 @@ public class GlMasterController {
 	
 	@Autowired
 	private GlMasterService glMasterService;
+	
+	 @Autowired
+	private AuthorizationProcedureService authProcedureService;
+	
 	
 	@GetMapping
     public List<GlMaster> getAll() {
@@ -37,8 +42,13 @@ public class GlMasterController {
 
     @PostMapping
     public void create(@RequestBody GlMaster gm) {
-    	glMasterService.createGlMaster(gm);
+    	
+    	if (gm.getOrgCode() == null) {
+    		gm.setOrgCode(50L);
+        }
+        authProcedureService.processAuthorization(gm.getOrgCode(), "GL-MAT", "GL102", gm);
     }
+
 
     @DeleteMapping("/{glNo}")
     public void revoke(@PathVariable Integer glNo) {

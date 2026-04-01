@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.bbots.gl.model.GlTransation;
 import com.bbots.gl.service.GlTranscationService;
+import com.bbots.service.AuthorizationProcedureService;
 
 
 
@@ -26,6 +27,9 @@ public class GlTransationController {
 	
 	@Autowired
     private GlTranscationService glTranscationService;
+	
+	 @Autowired
+    private AuthorizationProcedureService authProcedureService;
 	
 	@GetMapping
     public List<GlTransation> getAll() {
@@ -39,8 +43,13 @@ public class GlTransationController {
 
     @PostMapping
     public void create(@RequestBody GlTransation gt) {
-    	glTranscationService.createGlTransation(gt);
+    	
+    	if (gt.getOrgCode() == null) {
+    		gt.setOrgCode(50L);
+        }
+        authProcedureService.processAuthorization(gt.getOrgCode(), "GL-TRN", "GL103", gt);
     }
+
 
     @DeleteMapping("/{glNo}")
     public void revoke(@PathVariable Integer glNo) {
