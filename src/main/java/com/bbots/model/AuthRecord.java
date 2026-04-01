@@ -16,9 +16,9 @@ public class AuthRecord {
     private String displayRemarks;
     private String flUser; 
     private Date flUserDate;
-    private int slUser;  
+    private String slUser;  
     private Date slUserDate;
-    private int tlUser;
+    private String tlUser;
     private Date tlUserDate;
     private String entryUser;
     private Date entryDate;
