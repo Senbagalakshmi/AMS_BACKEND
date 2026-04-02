@@ -62,8 +62,7 @@ public class GlAttributesRepository {
 	    
 	    public void update(GlAttributes ga) {
 	        String sql = "UPDATE GL106 SET " +
-	                "ORGCODE = ?, " +
-	                "GLNO = ?, " +
+	                
 	                "GLATTRID = ?, " +
 	                "GLATTRVALUE = ?, " +	        
 	                "EUSER = ?, " +
