@@ -44,7 +44,7 @@ public class GlSegmentsController {
     	if (gs.getOrgCode() == null) {
     		gs.setOrgCode(50L);
         }
-        authProcedureService.processAuthorization(gs.getOrgCode(), "GL-", "GL105", gs);
+        authProcedureService.processAuthorization(gs.getOrgCode(), "GL-SEG", "GL105", gs);
     }
 
 

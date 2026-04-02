@@ -49,7 +49,11 @@ public class AuthRepository {
 
 	// --- AUTH001/002 Methods ---
 	public List<AuthRecord> getQueue() {
-		String sql = "SELECT * FROM AUTH001 WHERE FLUSER = '0' OR SLUSER = '0' OR TLUSER = '0' ORDER BY EDATE DESC";
+		String sql = "SELECT a.* FROM AUTH001 a " +
+				"WHERE (a.FLUSER = '0') " +
+				"OR (a.SLUSER = '0' AND EXISTS (SELECT 1 FROM AUTH102 c WHERE c.PROGRAMID = a.PROGRAMID AND c.LEVELS >= 2)) " +
+				"OR (a.TLUSER = '0' AND EXISTS (SELECT 1 FROM AUTH102 c WHERE c.PROGRAMID = a.PROGRAMID AND c.LEVELS >= 3)) " +
+				"ORDER BY a.EDATE DESC";
 		return jdbcTemplate.query(sql, (rs, rowNum) -> {
 			AuthRecord record = new AuthRecord();
 			record.setOrgCode(rs.getLong("ORGCODE"));
@@ -208,6 +212,12 @@ public class AuthRepository {
 	}
 
 	public void createAuthConfig(AuthConfigDTO dto) {
+		String currentUser = "SYSTEM";
+		if (SecurityContextHolder.getContext().getAuthentication() != null) {
+			currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
+		}
+		System.out.println("📝 Creating Auth Config for: " + dto.getProgramId() + " (User: " + currentUser + ")");
+
 		// Delete existing configurations for this program
 		jdbcTemplate.update("DELETE FROM AUTH102 WHERE PROGRAMID = ?", dto.getProgramId());
 		jdbcTemplate.update("DELETE FROM AUTH101 WHERE PROGRAMID = ?", dto.getProgramId());
@@ -215,17 +225,25 @@ public class AuthRepository {
 		String sql101 = "INSERT INTO AUTH101 (ORGCODE, PROGRAMID, APPROVALREQ, PRE_APPROVE_PROC, PRE_EXEC_METHOD, "
 				+ "PRE_PROCESSNAME, POST_APPROVE_PROC, POST_EXEC_METHOD, POST_PROCESSNAME, ISTRANPGM, EUSER, EDATE) "
 				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)";
+
+		System.out.println("🚀 Saving Config -> ApprReq: " + dto.getApprovalReq() +
+				", PreApp: " + dto.getPreApproveProc() +
+				", PostApp: " + dto.getPostApproveProc() +
+				", isTran: " + dto.getIsTranPgm() +
+				" (User: " + currentUser + ")");
 		jdbcTemplate.update(sql101, dto.getOrgCode(), dto.getProgramId(), dto.getApprovalReq(), dto.getPreApproveProc(),
 				dto.getPreExecMethod(), dto.getPreProcessName(), dto.getPostApproveProc(), dto.getPostExecMethod(),
-				dto.getPostProcessName(), dto.getIsTranPgm());
+				dto.getPostProcessName(), dto.getIsTranPgm(), currentUser);
 
 		if (dto.getAuthLevels() != null) {
 			String sql102 = "INSERT INTO AUTH102 (ORGCODE, PROGRAMID, PERMISSIONTYPE, LEVELS, ROLECD, USERID, EUSER, EDATE) "
 					+ "VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)";
+			System.out.println("🚀 Inserting into AUTH102 (" + dto.getAuthLevels().size() + " levels).");
 			for (AuthLevelDTO level : dto.getAuthLevels()) {
 				jdbcTemplate.update(sql102, dto.getOrgCode(), dto.getProgramId(), level.getPermissiontype(),
-						level.getLevel(), level.getRolecd(), level.getUserid());
+						level.getLevel(), level.getRolecd(), level.getUserid(), currentUser);
 			}
 		}
+		System.out.println("✅ Auth Config creation complete.");
 	}
 }
