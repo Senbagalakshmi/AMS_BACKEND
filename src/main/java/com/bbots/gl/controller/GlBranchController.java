@@ -1,6 +1,7 @@
 package com.bbots.gl.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -40,22 +41,29 @@ public class GlBranchController {
     }
 
     @PostMapping
-    public void create(@RequestBody GlBranch gb) {
-    	
-    	if (gb.getOrgCode() == null) {
-    		gb.setOrgCode(50L);
+    public GlBranch create(@RequestBody GlBranch gb) {
+        
+        if (gb.getOrgCode() == null) {
+            gb.setOrgCode(50L);
         }
         authProcedureService.processAuthorization(gb.getOrgCode(), "GL-BRN", "GL104", gb);
+        return gb;
     }
 
-    @DeleteMapping("/{glNo}")
-    public void revoke(@PathVariable Integer glNo) {
-    	glBranchService.revokeRole(glNo);
+    @DeleteMapping("/{orgCode}/{glNo}")
+    public void revoke(
+            @PathVariable Long orgCode,
+            @PathVariable Integer glNo) {
+            
+        glBranchService.revokeRole(orgCode, glNo);
     }
     
     @PutMapping
     public void update(@RequestBody GlBranch gb) {
     	glBranchService.updateGlBranch(gb);
     }
-
+    @GetMapping("/gl102/list")
+    public List<Map<String,Object>> getGlList(){
+        return glBranchService.getGlList();
+    }
 }
