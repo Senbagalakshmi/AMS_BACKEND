@@ -43,22 +43,27 @@ public class GlTransationController {
 
     @PostMapping
     public void create(@RequestBody GlTransation gt) {
-    	
-    	if (gt.getOrgCode() == null) {
-    		gt.setOrgCode(50L);
-        }
-        authProcedureService.processAuthorization(gt.getOrgCode(), "GL-TRN", "GL103", gt);
+    if (gt.getOrgCode() == null) {
+        gt.setOrgCode(50L);
     }
+    authProcedureService.processAuthorization(
+        gt.getOrgCode(),
+        "GL-TRN",
+        "GL103",
+        gt
+    );
+}
 
 
-    @DeleteMapping("/{glNo}")
-    public void revoke(@PathVariable Integer glNo) {
-    	glTranscationService.revokeRole(glNo);
+    @DeleteMapping("/{orgCode}/{glNo}")
+    public void revoke(@PathVariable Long orgCode,
+                       @PathVariable Integer glNo) {
+        glTranscationService.revokeRole(orgCode, glNo);
     }
-    
+
     @PutMapping
     public void update(@RequestBody GlTransation gt) {
-    	glTranscationService.updateGlTransation(gt);
+        glTranscationService.updateGlTransation(gt);
     }
 
 	

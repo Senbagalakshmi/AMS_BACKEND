@@ -18,70 +18,70 @@ public class GlTransactionRepository {
 
 	
 	
-	private final RowMapper<GlTransation> glTransation = (rs, rowNum) -> new GlTransation(
-			 rs.getLong("ORGCODE"),
-			 rs.getInt("GLNO"),
-			 rs.getString("ALLOWEDCURR"),
-			 rs.getString("EUSER"),
-			 rs.getTimestamp("EDATE"),
-			 rs.getString("AUSER"),
-			 rs.getTimestamp("ADATE"),
-			 rs.getString("CUSER"),
-			 rs.getTimestamp("CDATE")			          
-	    );
+    private final RowMapper<GlTransation> glTransation = (rs, rowNum) -> new GlTransation(
+            rs.getLong("ORGCODE"),
+            rs.getInt("GLNO"),
+            rs.getString("ALLOWEDCURR"),
+            rs.getString("EUSER"),
+            rs.getTimestamp("EDATE"),
+            rs.getString("AUSER"),
+            rs.getTimestamp("ADATE"),
+            rs.getString("CUSER"),
+            rs.getTimestamp("CDATE")
+    );
 
-	    public List<GlTransation> findAll() {
-	        return jdbcTemplate.query("SELECT * FROM GL103", glTransation);
-	    }
+    public List<GlTransation> findAll() {
+        String sql = "SELECT ORGCODE, GLNO, ALLOWEDCURR, EUSER, EDATE, AUSER, ADATE, CUSER, CDATE FROM GL103";
+        return jdbcTemplate.query(sql, glTransation);
+    }
 
-	    public List<GlTransation> findByUserId(Integer glNo) {
-	        return jdbcTemplate.query("SELECT * FROM GL103 WHERE GLNO = ?", glTransation, glNo);
-	    }
+    public List<GlTransation> findByUserId(Integer glNo) {
+        String sql = "SELECT ORGCODE, GLNO, ALLOWEDCURR, EUSER, EDATE, AUSER, ADATE, CUSER, CDATE FROM GL103 WHERE GLNO = ?";
+        return jdbcTemplate.query(sql, glTransation, glNo);
+    }
 
-	    public void save(GlTransation gt) {
-	        String sql = "INSERT INTO GL103 (ORGCODE, GLNO, ALLOWEDCURR, EUSER, EDATE, AUSER, ADATE, CUSER, CDATE) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-	        jdbcTemplate.update(sql,
-	        		gt.getOrgCode(),
-	        		gt.getGlNo(),
-	        		gt.getAllowedCurr(),
-	        		gt.getEUser(),
-	        		gt.getEDate(),
-	        		gt.getAUser(),
-	        		gt.getADate(),
-	        		gt.getCUser(),
-	        		gt.getCDate()
-	        );
-	    }
+    public void save(GlTransation gt) {
+    	String sql = "INSERT INTO GL103 (ORGCODE, GLNO, ALLOWEDCURR, EUSER, EDATE, AUSER, ADATE, CUSER, CDATE) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    	jdbcTemplate.update(sql,
+        gt.getOrgCode(),
+        gt.getGlNo(),
+        gt.getAllowedCurr(),
+        gt.getEUser(),
+        gt.getEDate(),
+        gt.getAUser(),
+        gt.getADate(),
+        gt.getCUser(),
+        gt.getCDate()
+       );
+    }
 
-	    public void delete(Integer glNo) {
-	        jdbcTemplate.update("DELETE FROM GL103 WHERE GLNO = ?",glNo);
-	    }
+    public void delete(Long orgCode, Integer glNo) {
+        String sql = "DELETE FROM GL103 WHERE ORGCODE = ? AND GLNO = ?";
+        jdbcTemplate.update(sql, orgCode, glNo);
+    }
 	    
-	    
-	    public void update(GlTransation gt) {
-	        String sql = "UPDATE GL103 SET " +
-	                "ORGCODE = ?, " +
-	                "GLNO = ?, " +
-	                "ALLOWEDCURR = ?, " +	                
-	                "EUSER = ?, " +
-	                "EDATE = ?, " +
-	                "AUSER = ?, " +
-	                "ADATE = ?, " +
-	                "CUSER = ?, " +
-	                "CDATE = ? " +
-	                "WHERE ORGCODE = ? AND GLNO = ?";
+    public void update(GlTransation gt) {
+        String sql = "UPDATE GL103 SET " +
+                "ALLOWEDCURR = ?, " +
+                "EUSER = ?, " +
+                "EDATE = ?, " +
+                "AUSER = ?, " +
+                "ADATE = ?, " +
+                "CUSER = ?, " +
+                "CDATE = ? " +
+                "WHERE ORGCODE = ? AND GLNO = ?";
 
-	        jdbcTemplate.update(sql,
-	        		gt.getAllowedCurr(),
-	        		gt.getEUser(),
-	        		gt.getEDate(),
-	        		gt.getAUser(),
-	        		gt.getADate(),
-	        		gt.getCUser(),
-	        		gt.getCDate(),
-	        		gt.getOrgCode(),     // WHERE condition
-	        		gt.getGlNo()      // WHERE condition
-	        );
-	    }
+        jdbcTemplate.update(sql,
+                gt.getAllowedCurr(),
+                gt.getEUser(),
+                gt.getEDate(),
+                gt.getAUser(),
+                gt.getADate(),
+                gt.getCUser(),
+                gt.getCDate(),
+                gt.getOrgCode(),
+                gt.getGlNo()
+        );
+    }
 
 }

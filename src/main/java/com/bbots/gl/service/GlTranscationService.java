@@ -23,16 +23,16 @@ public class GlTranscationService {
         return glTransactionRepository.findByUserId(glNo);
     }
 
-    public void createGlTransation(GlTransation gt) {
-    	glTransactionRepository.save(gt);
-    }
+//    public void createGlTransation(GlTransation gt) {
+//        glTransactionRepository.save(gt);
+//    }
 
-    public void revokeRole(Integer glNo) {
-    	glTransactionRepository.delete(glNo);
+    public void revokeRole(Long orgCode, Integer glNo) {
+        glTransactionRepository.delete(orgCode, glNo);
     }
     
     public void updateGlTransation(GlTransation gt) {
-    	glTransactionRepository.update(gt);
+        glTransactionRepository.update(gt);
     }
 
 }
