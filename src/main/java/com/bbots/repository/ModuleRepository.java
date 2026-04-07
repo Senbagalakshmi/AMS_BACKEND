@@ -22,6 +22,7 @@ public class ModuleRepository {
             rs.getInt("SUB_MODULE"),
             null, // subModuleId (not in MODULE001)
             null, // subModuleName (not in MODULE001)
+            null, // subModules (not in MODULE001)
             rs.getInt("status"),
             rs.getTimestamp("EDATE"),
             rs.getString("EUSER"),
