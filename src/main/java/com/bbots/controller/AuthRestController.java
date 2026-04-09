@@ -31,13 +31,21 @@ public class AuthRestController {
     public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) throws Exception {
 
         try {
+            System.out.println("🔐 AuthRestController: Attempting authentication for user: " + authenticationRequest.getUsername());
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword())
             );
         } catch (BadCredentialsException e) {
-            throw new Exception("Incorrect username or password", e);
+            System.out.println("⛔ AuthRestController: Authentication failed - Bad credentials for user: " + authenticationRequest.getUsername());
+            return ResponseEntity.status(401).body("Incorrect username or password");
+        } catch (Exception e) {
+            System.err.println("💥 AuthRestController: Unexpected error during authentication process: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Internal server error: " + e.getMessage());
         }
 
+        System.out.println("🙌 AuthRestController: Authentication successful for user: " + authenticationRequest.getUsername());
+        
         final UserDetails userDetails = userDetailsService
                 .loadUserByUsername(authenticationRequest.getUsername());
 

@@ -42,9 +42,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return super.authenticationManagerBean();
     }
 
+    @Bean
+    public org.springframework.web.cors.CorsConfigurationSource corsConfigurationSource() {
+        org.springframework.web.cors.CorsConfiguration configuration = new org.springframework.web.cors.CorsConfiguration();
+        configuration.setAllowedOrigins(java.util.Arrays.asList("*"));
+        configuration.setAllowedMethods(java.util.Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+        configuration.setAllowedHeaders(java.util.Arrays.asList("Authorization", "Content-Type", "X-Requested-With", "Accept"));
+        configuration.setExposedHeaders(java.util.Arrays.asList("Authorization"));
+        org.springframework.web.cors.UrlBasedCorsConfigurationSource source = new org.springframework.web.cors.UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.cors().and().csrf().disable()
+        http.cors().configurationSource(corsConfigurationSource()).and().csrf().disable()
                 .authorizeRequests().antMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
                 .antMatchers("/api/auth/login", "/api/auth/debug/**", "/h2-console/**").permitAll()
                 .anyRequest().authenticated()

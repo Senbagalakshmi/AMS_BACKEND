@@ -46,8 +46,8 @@ public class UserService {
         return response;
     }
 
-    public User getUserById(Long userscd) {
-        return repository.findById(userscd);
+    public User getUserById(Long orgcode, String userscd) {
+        return repository.findById(orgcode, userscd);
     }
 
     public void createUser(User user) {
@@ -85,8 +85,8 @@ public class UserService {
         repository.update(user);
     }
 
-    public void deleteUser(String userscd) {
-        repository.delete(userscd);
+    public void deleteUser(Long orgcode, String userscd) {
+        repository.delete(orgcode, userscd);
     }
     public UserProfileDTO getUserProfileByUsername(String username) {
 

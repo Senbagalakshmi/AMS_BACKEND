@@ -33,8 +33,8 @@ public class UserController {
     }
 
     @GetMapping("/{userscd}")
-    public User getUser(@PathVariable Long userscd) {
-        return service.getUserById(userscd);
+    public User getUser(@PathVariable String userscd, @RequestParam(required = false, defaultValue = "50") Long orgcode) {
+        return service.getUserById(orgcode, userscd);
     }
 
     @PostMapping
@@ -42,7 +42,8 @@ public class UserController {
         if (user.getOrgcode() == null) {
             user.setOrgcode(50L);
         }
-        authProcedureService.processAuthorization(user.getOrgcode(), "USR-CRT", "USERS001", user);
+        // Table name is now USER001 for user information
+        authProcedureService.processAuthorization(user.getOrgcode(), "USR-CRT", "USER001", user);
     }
 
     @PutMapping
@@ -51,8 +52,8 @@ public class UserController {
     }
 
     @DeleteMapping("/{userscd}")
-    public void deleteUser(@PathVariable String userscd) {
-        service.deleteUser(userscd);
+    public void deleteUser(@PathVariable String userscd, @RequestParam(required = false, defaultValue = "50") Long orgcode) {
+        service.deleteUser(orgcode, userscd);
     }
     @GetMapping("/profile")
     public UserProfileDTO getProfile(HttpServletRequest request) {
