@@ -1,0 +1,12 @@
+# Maven build output
+/target/
+
+# IDE metadata
+/.idea/
+/.settings/
+/bin/
+
+# Eclipse/STS/IntelliJ project files
+/.classpath
+/.factorypath
+/.project
