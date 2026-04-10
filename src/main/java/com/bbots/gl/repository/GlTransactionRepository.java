@@ -60,6 +60,8 @@ public class GlTransactionRepository {
 	    
 	    public void update(GlTransation gt) {
 	        String sql = "UPDATE GL103 SET " +
+	                "ORGCODE = ?, " +
+	                "GLNO = ?, " +
 	                "ALLOWEDCURR = ?, " +	                
 	                "EUSER = ?, " +
 	                "EDATE = ?, " +
