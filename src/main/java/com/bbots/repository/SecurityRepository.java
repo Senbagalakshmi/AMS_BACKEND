@@ -17,11 +17,10 @@ public class SecurityRepository {
         try {
             System.out.println("🔍 SecurityRepository: Querying authentication data for email: " + email);
             
-            // Join USER002 (email) and USER003 (password)
-            String sql = "SELECT u2.emailid AS username, u3.PASSWORD_HASH AS password, 'ROLE_USER' AS roles " +
-                         "FROM USER002 u2 " +
-                         "JOIN USER003 u3 ON u2.USERSCD = u3.USERSCD AND u2.ORGCODE = u3.ORGCODE " +
-                         "WHERE u2.emailid = ?";
+            // Query USERS001 table directly as it contains both email and password hash
+            String sql = "SELECT email AS username, password AS password, 'ROLE_USER' AS roles " +
+                         "FROM USERS001 " +
+                         "WHERE email = ?";
             
             Map<String, Object> result = jdbcTemplate.queryForMap(sql, email);
             System.out.println("✅ SecurityRepository: User found in database.");

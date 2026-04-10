@@ -20,7 +20,7 @@ public class GlBranchRepository {
 	private final RowMapper<GlBranch> glBranch = (rs, rowNum) -> new GlBranch(
 			 rs.getLong("ORGCODE"),
 			 rs.getInt("GLNO"),
-			 rs.getString("ALLOWEDCURR"),
+			 rs.getString("ALLOWEDBRN"),
 			 rs.getString("EUSER"),
 			 rs.getTimestamp("EDATE"),
 			 rs.getString("AUSER"),
@@ -59,8 +59,6 @@ public class GlBranchRepository {
 	    
 	    public void update(GlBranch gb) {
 	        String sql = "UPDATE GL104 SET " +
-	                "ORGCODE = ?, " +
-	                "GLNO = ?, " +
 	                "ALLOWEDBRN = ?, " +	                
 	                "EUSER = ?, " +
 	                "EDATE = ?, " +
